@@ -1,73 +1,61 @@
 function changeTheme() {
-  let theme;
   const setTheme = document.body;
   setTheme.classList.toggle("dark-mode");
 
-  if (setTheme.classList.contains("dark-mode")) {
-    console.log("dark");
-    theme = "dark";
-  } else {
-    theme = "light";
-    console.log("light");
-  }
-  //save them to local storage;
-  localStorage.setItem("pageTheme", JSON.stringify(theme));
+  const theme = setTheme.classList.contains("dark-mode") ? "dark" : "light";
+  localStorage.setItem("pageTheme", theme);
 }
 
-let getTheme = JSON.parse(localStorage.getItem("pageTheme"));
+function saveTask() {
+  const userTaskInput = document.querySelector("#user-task");
+  const userTask = userTaskInput.value.trim();
+
+  if (userTask) {
+    const task = {
+      id: new Date().getTime().toString(),
+      userTask: userTask,
+    };
+
+    let taskList = JSON.parse(localStorage.getItem("tasks")) || [];
+    taskList.push(task);
+    localStorage.setItem("tasks", JSON.stringify(taskList));
+
+    displayTasks();
+    userTaskInput.value = "";
+  } else {
+    alert("Please enter a task before saving.");
+  }
+}
+
+function displayTasks() {
+  const taskList = JSON.parse(localStorage.getItem("tasks")) || [];
+  const tasksContainer = document.getElementById("tasks-added");
+
+  tasksContainer.innerHTML = taskList
+    .map(
+      (task) => `
+    <div>
+      <span>${task.userTask}</span>
+      <button onclick="deleteTask('${task.id}')">X</button>
+    </div>
+  `
+    )
+    .join("");
+}
+
+function deleteTask(id) {
+  let taskList = JSON.parse(localStorage.getItem("tasks")) || [];
+  taskList = taskList.filter((task) => task.id !== id);
+  localStorage.setItem("tasks", JSON.stringify(taskList));
+  displayTasks();
+}
+
+// Initial setup
+let getTheme = localStorage.getItem("pageTheme");
 if (getTheme === "dark") {
-  document.body.classList = "dark-mode";
+  document.body.classList.add("dark-mode");
 }
 
 document.getElementById("btn-theme").addEventListener("click", changeTheme);
-
-///storing data from to local  storage.....
-
-let taskList = [];
-const uniqueTaskList = new Map();
-function saveAndReadData() {
-  const saveButton = document.getElementById("btn-submit");
-  saveButton.onclick = () => {
-    const task = {
-      id: new Date().getTime().toString(),
-      userTask: document.querySelector("#user-task").value,
-    };
-    ////adding a task to the list
-    taskList.push(task);
-
-    taskList.forEach((task) => {
-      if (!uniqueTaskList.has(task)) {
-        uniqueTaskList.set(task.userTask, task);
-      }
-    });
-    const taskListNoDuplications = Array.from(uniqueTaskList.values());
-    ///save to local////
-    localStorage.setItem("tasks", JSON.stringify(taskListNoDuplications));
-
-    function displayTask() {
-      const retrievedTasks = JSON.parse(localStorage.getItem("tasks"));
-
-      document.getElementById("tasks-added").innerHTML = retrievedTasks.map(
-        (task) => {
-          return `
-              <span>${task.userTask}</span>
-           
-              <button onclick="deleteTask(${task.id})" data-id-${task.id}>X</button>
-            `;
-        }
-      );
-    }
-
-    displayTask();
-  };
-}
-
-saveAndReadData();
-
-function deleteTask(id) {
-  const indexOftask = taskList.findIndex((task) => task.id === id);
-
-  if (!indexOftask == -1) {
-    taskList.splice(indexOftask, task);
-  }
-}
+document.getElementById("btn-submit").addEventListener("click", saveTask);
+displayTasks();
