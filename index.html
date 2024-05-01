@@ -3,7 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="app.js" defer></script>
     <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .light-mode {
+        background-color: white;
+      }
+      .dark-mode {
+        background-color: rgb(24, 20, 20);
+      }
+      fieldset {
+        width: 400px;
+        padding: 50px;
+      }
+      input {
+        height: 40px;
+        padding: 0 0.4em;
+      }
+    </style>
   </head>
-  <body></body>
+  <body>
+    <button id="btn-theme">Theme</button>
+
+    <fieldset>
+      <legend>Enter data</legend>
+      <input type="text" placeholder="task" id="user-task" />
+      <button id="btn-submit">Submit</button>
+    </fieldset>
+    <div id="tasks-added"></div>
+  </body>
 </html>
